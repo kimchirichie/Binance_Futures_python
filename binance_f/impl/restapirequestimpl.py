@@ -31,11 +31,6 @@ class RestApiRequestImpl(object):
         request.header.update({'Content-Type': 'application/json'})
         request.header.update({"X-MBX-APIKEY": self.__api_key})
         request.url = url + "?" + builder.build_url()
-         # For develop
-        print("====== Request ======")
-        print(request)
-        PrintMix.print_data(request)
-        print("=====================")
         return request
 
     def __create_request_by_post_with_signature(self, url, builder):
@@ -49,11 +44,6 @@ class RestApiRequestImpl(object):
         request.header.update({"X-MBX-APIKEY": self.__api_key})
         request.post_body = builder.post_map
         request.url = url + "?" + builder.build_url()
-        # For develop
-        print("====== Request ======")
-        print(request)
-        PrintMix.print_data(request)
-        print("=====================")
         return request
 
     def __create_request_by_delete_with_signature(self, url, builder):
@@ -66,11 +56,6 @@ class RestApiRequestImpl(object):
         request.header.update({'Content-Type': 'application/json'})
         request.header.update({"X-MBX-APIKEY": self.__api_key})
         request.url = url + "?" + builder.build_url()
-        # For develop
-        print("====== Request ======")
-        print(request)
-        PrintMix.print_data(request)
-        print("=====================")
         return request
 
     def __create_request_by_get_with_signature(self, url, builder):
@@ -83,11 +68,6 @@ class RestApiRequestImpl(object):
         request.header.update({"Content-Type": "application/x-www-form-urlencoded"})
         request.header.update({"X-MBX-APIKEY": self.__api_key})
         request.url = url + "?" + builder.build_url()
-        # For develop
-        print("====== Request ======")
-        print(request)
-        PrintMix.print_data(request)
-        print("=====================")
         return request
 
     def __create_request_by_put_with_signature(self, url, builder):
@@ -100,11 +80,6 @@ class RestApiRequestImpl(object):
         request.header.update({'Content-Type': 'application/json'})
         request.header.update({"X-MBX-APIKEY": self.__api_key})
         request.url = url + "?" + builder.build_url()
-        # For develop
-        print("====== Request ======")
-        print(request)
-        PrintMix.print_data(request)
-        print("=====================")
         return request
         
     def get_servertime(self):
@@ -394,7 +369,7 @@ class RestApiRequestImpl(object):
 
 
 
-    def post_order(self, symbol, side, ordertype, 
+    def post_order(self, symbol, side, ordertype,
                 timeInForce, quantity, reduceOnly, price, newClientOrderId, stopPrice, workingType, closePosition, positionSide, callbackRate, activationPrice, newOrderRespType):
         check_should_not_none(symbol, "symbol")
         check_should_not_none(side, "side")
@@ -728,4 +703,33 @@ class RestApiRequestImpl(object):
 
         request.json_parser = parse
         return request
-      
+
+
+    # following is not part of vendor code
+    # posts a request to transfer between accounts
+    def post_account_transfer(self, asset, amount, transferType):
+        check_should_not_none(asset, "asset")
+        check_should_not_none(amount, "amount")
+        check_should_not_none(transferType, "transferType")
+        builder = UrlParamsBuilder()
+        builder.put_url("asset", asset)
+        builder.put_url("amount", amount)
+        builder.put_url("type", transferType)
+        request = self.__create_request_by_post_with_signature("/sapi/v1/futures/transfer", builder)
+        def parse(json_wrapper):
+            result = Transfer.json_parse(json_wrapper)
+            return result
+        request.json_parser = parse
+        return request
+    def get_leverage_bracket(self, symbol=None):
+        builder = UrlParamsBuilder()
+        if symbol is not None:
+            builder.put_url("symbol", symbol)
+        request = self.__create_request_by_get_with_signature("/fapi/v1/leverageBracket", builder)
+        def parse(json_wrapper):
+            if symbol is None:
+                return LeverageBracket.json_parse(json_wrapper)
+            return BracketSymbol.json_parse(json_wrapper)
+        request.json_parser = parse
+        return request
+    # above is not part of vendor code
