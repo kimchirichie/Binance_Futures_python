@@ -35,3 +35,7 @@ from binance_f.model.income import Income
 from binance_f.model.accountupdate import AccountUpdate
 from binance_f.model.orderupdate import OrderUpdate
 from binance_f.model.listenkeyexpired import ListenKeyExpired
+
+# edited read-only vendor code from below
+from binance_f.model.transfer import Transfer
+from binance_f.model.leverageBracket import LeverageBracket, BracketSymbol
